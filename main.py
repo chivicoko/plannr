@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QListWidgetItem, QMessage
 from PyQt5.uic import loadUi
 import sys
 from PyQt5 import QtCore
+from datetime import datetime
 
 
 class MainWindow(QMainWindow):
@@ -10,21 +11,43 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         loadUi("main.ui", self)
         self.setWindowTitle("My Planner")
+        
+        # # Connect to SQLite3 database
+        # conn = sqlite3.connect('data.db')
+        # cursor = conn.cursor()
+
+        # try:
+        #     # Create the tasks table if it doesn't exist
+        #     cursor.execute('''CREATE TABLE IF NOT EXISTS tasks (task TEXT, completed TEXT, date TEXT)''')
+        #     print("Table 'tasks' created successfully.")
+
+        #     # Create a list of tasks to insert
+        #     tasks_data = [
+        #         ('Task 1', 'Yes', '2024-04-24'),
+        #         ('Task 2', 'No', '2024-04-20'),
+        #         ('Task 3', 'Yes', '2024-04-19'),
+        #         ('Task 4', 'Yes', '2024-04-21'),
+        #         ('Task 5', 'Yes', '2024-04-19'),
+        #         ('Task 6', 'No', '2024-04-19')
+        #     ]
+
+        #     # Insert data into the table
+        #     cursor.executemany('INSERT INTO tasks VALUES (?,?,?)', tasks_data)
+        #     print("Data inserted successfully.")
+
+        #     # Commit changes and close connection
+        #     conn.commit()
+        #     conn.close()
+
+        # except sqlite3.Error as e:
+        #     print("Error:", e)
+        #     conn.rollback()
+        #     conn.close()
 
         self.calendarWidget.selectionChanged.connect(self.changeCalendarSelection)
         self.changeCalendarSelection()
         self.pushButton_2.clicked.connect(self.saveChanges)
-
-        conn = sqlite3.connect('data2.db')
-        c = conn.cursor()
-
-        # Create table
-        c.execute('''CREATE TABLE IF NOT EXISTS tasks
-                    (task TEXT, completed BOOLEAN, date TEXT, updated_at TEXT)''')
-
-        # Commit changes and close connection
-        conn.commit()
-        conn.close()
+        self.pushButton.clicked.connect(self.addTask)
 
 
     def changeCalendarSelection(self):
@@ -74,6 +97,19 @@ class MainWindow(QMainWindow):
         msgBox.setText("Changes saved!")
         msgBox.setStandardButtons(QMessageBox.Ok)
         msgBox.exec()
+
+    def addTask(self):
+        db = sqlite3.connect("data.db")
+        cursor = db.cursor()
+
+        newTask = "CLean the house"
+        date = self.calendarWidget.selectedDate().toPyDate().strftime("%Y-%m-%d")
+
+        query = "INSERT INTO tasks(task, completed, date) VALUES (?,?,?)"
+        row = (newTask, "No", date,)
+
+        cursor.execute(query, row)
+        db.commit()
 
 
 if __name__ == "__main__":
