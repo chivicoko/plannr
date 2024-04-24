@@ -6,7 +6,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         loadUi("main.ui", self)
-        self.setWindowTitle("My Daily Tasks")
+        self.setWindowTitle("My Planner")
 
 
 
