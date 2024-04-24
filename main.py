@@ -102,7 +102,7 @@ class MainWindow(QMainWindow):
         db = sqlite3.connect("data.db")
         cursor = db.cursor()
 
-        newTask = "CLean the house"
+        newTask = str(self.lineEdit.text())
         date = self.calendarWidget.selectedDate().toPyDate().strftime("%Y-%m-%d")
 
         query = "INSERT INTO tasks(task, completed, date) VALUES (?,?,?)"
@@ -110,6 +110,8 @@ class MainWindow(QMainWindow):
 
         cursor.execute(query, row)
         db.commit()
+        self.updateTaskList(date)
+        self.lineEdit.clear()
 
 
 if __name__ == "__main__":
